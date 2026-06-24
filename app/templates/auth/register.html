@@ -1,0 +1,44 @@
+{# app/templates/auth/register.html — using the macro #}
+{% extends 'base.html' %}
+{% from 'macros/forms.html' import render_field %}
+
+{% block title %}Register — MyApp{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <h1>Create your account</h1>
+  <p class="subtitle">Join us today.</p>
+
+  <form method="POST" novalidate>
+    {# ── CSRF token — NEVER omit this line ── #}
+    {# hidden_tag() renders a hidden <input> with a signed token. #}
+    {# Without it, every POST returns a 400 Bad Request. #}
+    {{ form.hidden_tag() }}
+
+    {{ render_field(form.username,
+    placeholder='e.g. ali_dev',
+    hint='3–80 characters',
+    autocomplete='username') }}
+
+    {{ render_field(form.email,
+    placeholder='you@example.com',
+    autocomplete='email') }}
+
+    {{ render_field(form.password,
+    placeholder='Minimum 8 characters',
+    hint='At least 8 characters',
+    autocomplete='new-password') }}
+
+    {{ render_field(form.confirm,
+    placeholder='Repeat your password',
+    autocomplete='new-password') }}
+
+    {{ form.submit(class='btn btn--primary btn--full') }}
+  </form>
+
+  <p class="auth-link">
+    Already have an account?
+    <a href="{{ url_for('auth.login') }}">Log in</a>
+  </p>
+</div>
+{% endblock %}

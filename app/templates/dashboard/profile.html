@@ -1,0 +1,26 @@
+<!-- app/templates/dashboard/profile.html -->
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div style="max-width:700px; margin:40px auto; padding:0 20px;">
+  <h2>My Profile</h2>
+  <table style="margin-top:16px; font-size:14px; border-collapse:collapse;">
+    <tr>
+      <td style="padding:8px 16px 8px 0; color:#666;">Username</td>
+      <td style="padding:8px 0;"><strong>{{ current_user.username }}</strong></td>
+    </tr>
+    <tr>
+      <td style="padding:8px 16px 8px 0; color:#666;">Email</td>
+      <td style="padding:8px 0;">{{ current_user.email }}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 16px 8px 0; color:#666;">Role</td>
+      <td style="padding:8px 0;">{{ current_user.role }}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px 16px 8px 0; color:#666;">Member since</td>
+      <td style="padding:8px 0;">{{ current_user.created_at.strftime('%d %b %Y') }}</td>
+    </tr>
+  </table>
+</div>
+{% endblock %}

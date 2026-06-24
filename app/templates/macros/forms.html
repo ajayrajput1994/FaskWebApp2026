@@ -1,0 +1,26 @@
+{# app/templates/macros/forms.html #}
+
+{% macro render_field(field, placeholder='', hint='') %}
+<div class="field {% if field.errors %}field--error{% endif %}">
+
+  {# Label — renders <label for="field_id">Field name</label> #}
+  {{ field.label }}
+
+  {# Input — kwargs let you pass extra HTML attributes like autocomplete #}
+  {{ field(
+  placeholder=placeholder,
+  class='input' + (' input--error' if field.errors else ''),
+  **kwargs
+  ) }}
+
+  {# Show errors if any, otherwise show hint #}
+  {% if field.errors %}
+  {% for error in field.errors %}
+  <span class="field-error">{{ error }}</span>
+  {% endfor %}
+  {% elif hint %}
+  <span class="field-hint">{{ hint }}</span>
+  {% endif %}
+
+</div>
+{% endmacro %}
