@@ -1,30 +1,66 @@
-<!-- app/templates/base.html -->
+{# app/templates/base.html #}
 <!DOCTYPE html>
 <html lang="en">
 
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MyApp{% endblock %}</title>
+
+    {# ── Title block: child templates override this ── #}
+    <title>{% block title %}MyApp{% endblock %} — MyApp</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    {# ── Styles block: child templates can inject page-specific CSS ── #}
+    {% block styles %}{% endblock %}
   </head>
 
   <body>
-    <nav>
-      {% if current_user.is_authenticated %}
-      <span>{{ current_user.username }}</span>
-      <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
-      <a href="{{ url_for('auth.logout') }}">Logout</a>
-      {% else %}
-      <a href="{{ url_for('auth.login') }}">Login</a>
 
-      <a href="{{ url_for('auth.register') }}">Register</a>
-      {% endif %}
+    {# ── Navigation ── #}
+    <nav class="navbar">
+      <a href="{{ url_for('dashboard.index') }}" class="nav-brand">MyApp</a>
+
+      <div class="nav-links">
+        {% if current_user.is_authenticated %}
+
+        <a href="{{ url_for('dashboard.index') }}"
+          class="{{ 'nav-link active' if request.endpoint == 'dashboard.index' else 'nav-link' }}">
+          Dashboard
+        </a>
+
+        <a href="{{ url_for('dashboard.profile') }}"
+          class="{{ 'nav-link active' if request.endpoint == 'dashboard.profile' else 'nav-link' }}">
+          Profile
+        </a>
+
+        {# Only show Editor link to admin and editor roles #}
+        {% if current_user.has_role('admin', 'editor') %}
+        <a href="{{ url_for('dashboard.editor_page') }}" class="nav-link">
+          Editor
+        </a>
+        {% endif %}
+
+        {# Only show Admin link to admin role #}
+        {% if current_user.has_role('admin') %}
+        <a href="{{ url_for('dashboard.admin_panel') }}" class="nav-link nav-link--admin">
+          Admin
+        </a>
+        {% endif %}
+
+        <span class="nav-user">{{ current_user.username }}</span>
+        <a href="{{ url_for('auth.logout') }}" class="nav-link">Log out</a>
+
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="nav-link">Log in</a>
+        <a href="{{ url_for('auth.register') }}" class="nav-link nav-link--cta">Register</a>
+        {% endif %}
+      </div>
     </nav>
 
     {# ── Flash messages ── #}
-    {# with_categories=true returns (category, message) tuples #}
-    {# category maps to CSS class: alert-danger, alert-success, etc. #}
+    {# with_categories=true gives us (category, message) tuples.
+    Category maps to CSS class: alert-success, alert-danger, alert-info, alert-warning #}
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flash-container">
@@ -38,9 +74,19 @@
     {% endif %}
     {% endwith %}
 
-    <main>
+    {# ── Main content ── #}
+    <main class="main-content">
       {% block content %}{% endblock %}
     </main>
+
+    {# ── Footer ── #}
+    <footer class="footer">
+      <p>&copy; {{ now.year if now else '2025' }} MyApp. Built with Flask.</p>
+    </footer>
+
+    {# ── Scripts block: child templates inject page-specific JS here ── #}
+    {% block scripts %}{% endblock %}
+
   </body>
 
 </html>

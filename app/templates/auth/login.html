@@ -1,44 +1,28 @@
 {# app/templates/auth/login.html #}
 {% extends 'base.html' %}
+{% from 'macros/forms.html' import render_field, render_checkbox %}
 
-{% block title %}Log in — MyApp{% endblock %}
+{% block title %}Log in{% endblock %}
 
 {% block content %}
 <div class="auth-card">
-  <h1>Welcome back</h1>
-  <p class="subtitle">Sign in to your account.</p>
+  <h2>Welcome back</h2>
+  <p class="auth-sub">Sign in to your account.</p>
 
   <form method="POST" novalidate>
     {{ form.hidden_tag() }}
 
-    <div class="field {% if form.email.errors %}field--error{% endif %}">
-      {{ form.email.label }}
-      {{ form.email(
-      placeholder='you@example.com',
-      autocomplete='email',
-      class='input' + (' input--error' if form.email.errors else '')
-      ) }}
-      {% for error in form.email.errors %}
-      <span class="field-error">{{ error }}</span>
-      {% endfor %}
-    </div>
+    {{ render_field(form.email,
+    placeholder='you@example.com',
+    autocomplete='email') }}
 
-    <div class="field {% if form.password.errors %}field--error{% endif %}">
-      {{ form.password.label }}
-      {{ form.password(
-      placeholder='Your password',
-      autocomplete='current-password',
-      class='input' + (' input--error' if form.password.errors else '')
-      ) }}
-      {% for error in form.password.errors %}
-      <span class="field-error">{{ error }}</span>
-      {% endfor %}
-    </div>
+    {{ render_field(form.password,
+    placeholder='Your password',
+    autocomplete='current-password') }}
 
-    <div class="field field--row">
-      {{ form.remember() }}
-      {{ form.remember.label }}
-      <a href="{{ url_for('auth.forgot_password') }}" class="ml-auto">
+    <div class="field-row">
+      {{ render_checkbox(form.remember) }}
+      <a href="{{ url_for('auth.forgot_password') }}" class="link-muted">
         Forgot password?
       </a>
     </div>

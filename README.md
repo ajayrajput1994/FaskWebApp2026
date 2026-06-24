@@ -151,3 +151,82 @@ flask db upgrade
 flask db stamp head     # tells Alembic "this DB is already at latest, trust me"
 
 pip install flask-wtf email-validator
+
+======================jinja2 start====================================
+-------------Template inheritance — {% extends %} + {% block %}---------------
+{# Parent defines placeholders: #}
+{% block title %}Default title{% endblock %}
+{% block content %}{% endblock %}
+
+{# Child fills them in: #}
+{% extends 'base.html' %}
+{% block title %}My page{% endblock %}
+{% block content %}
+  <p>My content here.</p>
+{% endblock %}
+
+------------Macros — {% macro %} + {% from ... import %}--------------------
+{# Define once in macros/forms.html: #}
+{% macro alert(message, type='info') %}
+  <div class="alert alert-{{ type }}">{{ message }}</div>
+{% endmacro %}
+
+{# Import and call anywhere: #}
+{% from 'macros/forms.html' import alert %}
+{{ alert('Saved!', type='success') }}
+{{ alert('Error occurred.', type='danger') }}
+
+--------------Built-in filters — {{ value|filter }}-------------------
+{# String filters #}
+{{ user.username|upper }}           {# ALI_DEV #}
+{{ user.username|lower }}           {# ali_dev #}
+{{ user.username|capitalize }}      {# Ali_dev #}
+{{ user.username|truncate(20) }}    {# ali_dev_with_lon... #}
+{{ post.body|striptags }}           {# removes all HTML tags #}
+{{ post.body|safe }}                {# renders HTML — only use on trusted content! #}
+
+{# Number filters #}
+{{ price|round(2) }}                {# 19.99 #}
+{{ count|default(0) }}             {# 0 if count is None #}
+
+{# Date filter (needs Flask-Moment or strftime) #}
+{{ user.created_at.strftime('%d %b %Y') }}   {# 01 Jan 2025 #}
+
+{# List filters #}
+{{ items|length }}                  {# 5 #}
+{{ items|first }}                   {# first item #}
+{{ items|last }}                    {# last item #}
+{{ items|join(', ') }}              {# a, b, c #}
+{{ items|sort }}                    {# sorted list #}
+{{ items|reverse|list }}            {# reversed list #}
+{{ user.created_at|time_ago }} custom filter
+
+-----------------Control flow — {% if %}, {% for %}, {% set %}------------
+{# Conditional with role check #}
+{% if current_user.is_authenticated %}
+  {% if current_user.has_role('admin') %}
+    <a href="/admin">Admin panel</a>
+  {% elif current_user.has_role('editor') %}
+    <a href="/editor">Editor panel</a>
+  {% else %}
+    <p>Welcome, viewer.</p>
+  {% endif %}
+{% endif %}
+
+{# Loop with loop variable #}
+{% for user in users %}
+  <tr class="{{ 'row--even' if loop.even else 'row--odd' }}">
+    <td>{{ loop.index }}</td>        {# 1-based position #}
+    <td>{{ user.username }}</td>
+    {% if loop.last %}
+      <td>← last row</td>
+    {% endif %}
+  </tr>
+{% else %}
+  <tr><td colspan="3">No users found.</td></tr>
+{% endfor %}
+
+{# Set a variable #}
+{% set page_title = 'Admin Panel' %}
+{% set user_count = users|length %}
+==========================jinja2 end===========================

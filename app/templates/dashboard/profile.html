@@ -1,26 +1,63 @@
-<!-- app/templates/dashboard/profile.html -->
+{# app/templates/dashboard/profile.html #}
 {% extends 'base.html' %}
-{% block title %}My Profile{% endblock %}
+{% from 'macros/forms.html' import role_badge, user_avatar %}
+
+{% block title %}My profile{% endblock %}
+
 {% block content %}
-<div style="max-width:700px; margin:40px auto; padding:0 20px;">
-  <h2>My Profile</h2>
-  <table style="margin-top:16px; font-size:14px; border-collapse:collapse;">
+
+<h2 style="margin:0 0 20px;">My profile</h2>
+
+<div class="dash-card" style="max-width:520px;">
+  <div style="display:flex; align-items:center; gap:16px;
+              padding-bottom:16px; border-bottom:0.5px solid #f0f0f0;
+              margin-bottom:16px;">
+    {{ user_avatar(current_user, size=56) }}
+    <div>
+      <p style="margin:0 0 2px; font-size:18px; font-weight:500;">
+        {{ current_user.username }}
+      </p>
+      <p style="margin:0; font-size:13px; color:#666;">
+        {{ current_user.email }}
+      </p>
+    </div>
+  </div>
+
+  <table style="width:100%; font-size:14px; border-collapse:collapse;">
     <tr>
-      <td style="padding:8px 16px 8px 0; color:#666;">Username</td>
-      <td style="padding:8px 0;"><strong>{{ current_user.username }}</strong></td>
+      <td style="padding:9px 0; color:#666; width:140px;
+                 border-top:0.5px solid #f0f0f0;">Role</td>
+      <td style="padding:9px 0; border-top:0.5px solid #f0f0f0;">
+        {{ role_badge(current_user.role) }}
+      </td>
     </tr>
     <tr>
-      <td style="padding:8px 16px 8px 0; color:#666;">Email</td>
-      <td style="padding:8px 0;">{{ current_user.email }}</td>
+      <td style="padding:9px 0; color:#666; border-top:0.5px solid #f0f0f0;">
+        Member since
+      </td>
+      <td style="padding:9px 0; border-top:0.5px solid #f0f0f0;">
+        {{ current_user.created_at.strftime('%d %B %Y') }}
+      </td>
     </tr>
     <tr>
-      <td style="padding:8px 16px 8px 0; color:#666;">Role</td>
-      <td style="padding:8px 0;">{{ current_user.role }}</td>
-    </tr>
-    <tr>
-      <td style="padding:8px 16px 8px 0; color:#666;">Member since</td>
-      <td style="padding:8px 0;">{{ current_user.created_at.strftime('%d %b %Y') }}</td>
+      <td style="padding:9px 0; color:#666; border-top:0.5px solid #f0f0f0;">
+        Account age
+      </td>
+      <td style="padding:9px 0; border-top:0.5px solid #f0f0f0;">
+        {{ current_user.created_at|time_ago }}
+      </td>
     </tr>
   </table>
+
+  <div style="margin-top:20px; padding-top:16px;
+              border-top:0.5px solid #f0f0f0; display:flex; gap:8px;">
+    <a href="{{ url_for('auth.forgot_password') }}" class="btn" style="font-size:13px;">
+      Change password
+    </a>
+    <a href="{{ url_for('dashboard.index') }}" class="btn" style="font-size:13px;">
+      Back to dashboard
+    </a>
+  </div>
 </div>
+
 {% endblock %}

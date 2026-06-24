@@ -1,98 +1,129 @@
-/* app/static/css/main.css */
+/* app/static/css/main.css  */
 
-/* ── Auth card ── */
-.auth-card {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 32px;
-  border: 0.5px solid #e0e0e0;
-  border-radius: 12px;
-  background: #fff;
-}
-
-/* ── Fields ── */
-.field {
-  margin-bottom: 16px;
-}
-
-.field label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 4px;
-}
-
-/* ── Inputs ── */
-.input {
-  width: 100%;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0 10px;
-  height: 38px;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.15s;
 }
 
-.input:focus {
-  border-color: #4a7cf7;
-  box-shadow: 0 0 0 3px rgba(74, 124, 247, .15);
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #f7f7f5;
 }
 
-.input--error {
-  border-color: #e24b4a;
-  background: #fff8f8;
+a {
+  color: #4a7cf7;
+  text-decoration: none;
 }
 
-.input--error:focus {
-  border-color: #e24b4a;
-  box-shadow: 0 0 0 3px rgba(226, 75, 74, .15);
+a:hover {
+  text-decoration: underline;
 }
 
-/* ── Inline field errors ── */
-.field-error {
-  display: block;
-  font-size: 12px;
-  color: #a32d2d;
-  margin-top: 4px;
+h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 500;
 }
 
-.field-hint {
-  display: block;
-  font-size: 12px;
-  color: #888;
-  margin-top: 4px;
-}
-
-/* ── Flash messages ── */
-.flash-container {
-  padding: 0 20px;
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.alert {
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 10px;
+/* ── Navbar ─────────────────────────────────────────────────── */
+.navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 24px;
+  height: 52px;
+  background: #fff;
+  border-bottom: 0.5px solid #e0e0e0;
 }
 
-.alert-danger {
-  background: #fcebeb;
-  color: #791f1f;
-  border: 0.5px solid #f09595;
+.nav-brand {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-link {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.nav-link.active {
+  background: #eeedfe;
+  color: #3c3489;
+}
+
+.nav-link--admin {
+  color: #a32d2d;
+}
+
+.nav-link--admin:hover {
+  background: #fff8f8;
+}
+
+.nav-link--cta {
+  background: #4a7cf7;
+  color: #fff;
+  margin-left: 4px;
+}
+
+.nav-link--cta:hover {
+  background: #3a6ce0;
+  color: #fff;
+}
+
+.nav-user {
+  font-size: 13px;
+  color: #888;
+  padding: 0 8px;
+}
+
+/* ── Flash messages ──────────────────────────────────────────── */
+.flash-container {
+  max-width: 860px;
+  margin: 12px auto;
+  padding: 0 24px;
+}
+
+.alert {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 8px;
 }
 
 .alert-success {
   background: #eaf3de;
   color: #27500a;
   border: 0.5px solid #97c459;
+}
+
+.alert-danger {
+  background: #fcebeb;
+  color: #791f1f;
+  border: 0.5px solid #f09595;
 }
 
 .alert-info {
@@ -112,9 +143,269 @@
   border: none;
   cursor: pointer;
   font-size: 18px;
-  opacity: 0.5;
+  opacity: .5;
+  line-height: 1;
 }
 
 .alert-close:hover {
   opacity: 1;
+}
+
+/* ── Main content ────────────────────────────────────────────── */
+.main-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ── Auth cards ──────────────────────────────────────────────── */
+.auth-card {
+  max-width: 420px;
+  margin: 20px auto;
+  padding: 32px;
+  background: #fff;
+  border: 0.5px solid #e0e0e0;
+  border-radius: 12px;
+}
+
+.auth-sub {
+  margin: 0 0 24px;
+  color: #666;
+  font-size: 14px;
+}
+
+.auth-link {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 16px;
+}
+
+/* ── Form fields ─────────────────────────────────────────────── */
+.field {
+  margin-bottom: 14px;
+}
+
+.field--error .input {
+  border-color: #e24b4a;
+  background: #fff8f8;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.input {
+  width: 100%;
+  padding: 0 10px;
+  height: 38px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .15s;
+  background: #fff;
+}
+
+.input:focus {
+  border-color: #4a7cf7;
+  box-shadow: 0 0 0 3px rgba(74, 124, 247, .12);
+}
+
+.input--error:focus {
+  border-color: #e24b4a;
+  box-shadow: 0 0 0 3px rgba(226, 75, 74, .12);
+}
+
+.field-error {
+  display: block;
+  font-size: 12px;
+  color: #a32d2d;
+  margin-top: 3px;
+}
+
+.field-hint {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 3px;
+}
+
+.field--inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-label {
+  font-size: 13px;
+  color: #555;
+}
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.link-muted {
+  font-size: 13px;
+  color: #888;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  display: inline-block;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #d0d0d0;
+  background: #fafafa;
+  color: #333;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #f0f0f0;
+}
+
+.btn--primary {
+  background: #4a7cf7;
+  border-color: #3a6ce0;
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: #3a6ce0;
+}
+
+.btn--full {
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Badges ──────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+  border: 0.5px solid #ddd;
+  background: #f5f5f5;
+  color: #555;
+}
+
+.badge--admin {
+  background: #fff8f8;
+  color: #a32d2d;
+  border-color: #f09595;
+}
+
+.badge--editor {
+  background: #eeedfe;
+  color: #3c3489;
+  border-color: #afa9ec;
+}
+
+.badge--viewer {
+  background: #f1efe8;
+  color: #5f5e5a;
+  border-color: #d3d1c7;
+}
+
+/* ── Avatar ──────────────────────────────────────────────────── */
+.avatar {
+  border-radius: 50%;
+  background: #eeedfe;
+  color: #3c3489;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Error pages ─────────────────────────────────────────────── */
+.error-page {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.error-page h2 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.error-page p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 13px;
+  color: #bbb;
+  border-top: 0.5px solid #e8e8e8;
+  margin-top: 40px;
+}
+
+/* app/static/css/main.css  ← ADD at the bottom */
+
+/* ── Dashboard cards ─────────────────────────────────────────── */
+.dash-card {
+  background: #fff;
+  border: 0.5px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* ── Stat cards ──────────────────────────────────────────────── */
+.stat-card {
+  background: #f7f7f5;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0 0 2px;
+  line-height: 1;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: #bbb;
+  margin: 0;
+}
+
+/* ── Danger outline button ───────────────────────────────────── */
+.btn--danger-outline {
+  border-color: #f09595;
+  color: #a32d2d;
+  background: #fff;
+}
+
+.btn--danger-outline:hover {
+  background: #fff8f8;
 }

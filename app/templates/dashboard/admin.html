@@ -1,41 +1,153 @@
-<!-- app/templates/dashboard/admin.html -->
+{# app/templates/dashboard/admin.html#}
 {% extends 'base.html' %}
-{% block title %}Admin Panel{% endblock %}
-{% block content %}
-<div style="max-width:700px; margin:40px auto; padding:0 20px;">
-  <h2>Admin Panel</h2>
-  <p style="color:#666; margin-bottom:20px;">
-    All registered users — admin access only.
-  </p>
+{% from 'macros/forms.html' import role_badge, user_avatar %}
 
-  <table style="width:100%; font-size:14px; border-collapse:collapse;">
+{% block title %}Admin panel{% endblock %}
+
+{% block content %}
+
+<div style="display:flex; justify-content:space-between;
+            align-items:center; margin-bottom:24px;">
+  <div>
+    <h2 style="margin:0 0 4px;">Admin panel</h2>
+    <p style="margin:0; color:#666; font-size:14px;">
+      Manage all registered users
+    </p>
+  </div>
+  <a href="{{ url_for('dashboard.index') }}" class="btn" style="font-size:13px;">
+    Back to dashboard
+  </a>
+</div>
+
+{# ── Search form ── #}
+<form method="GET" action="{{ url_for('dashboard.admin_panel') }}" style="margin-bottom:16px; display:flex; gap:8px;">
+  <input type="text" name="q" value="{{ search }}" placeholder="Search username or email..." style="flex:1; height:36px; padding:0 12px; font-size:14px;
+                border:1px solid #d0d0d0; border-radius:8px;
+                background:#fff; outline:none;">
+  <button type="submit" class="btn btn--primary">Search</button>
+  {% if search %}
+  <a href="{{ url_for('dashboard.admin_panel') }}" class="btn">Clear</a>
+  {% endif %}
+</form>
+
+{# ── Results count ── #}
+<p style="font-size:13px; color:#888; margin-bottom:12px;">
+  {% if search %}
+  {{ users|length }} result{{ 's' if users|length != 1 }} for
+  "<strong>{{ search }}</strong>"
+  {% else %}
+  {{ users|length }} user{{ 's' if users|length != 1 }} total
+  {% endif %}
+</p>
+
+{# ── Users table ── #}
+<div class="dash-card" style="padding:0; overflow:hidden;">
+  {% if users %}
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
     <thead>
-      <tr style="border-bottom:1px solid #e0e0e0;">
-        <th style="text-align:left; padding:8px 12px; color:#666; font-weight:500;">Username</th>
-        <th style="text-align:left; padding:8px 12px; color:#666; font-weight:500;">Email</th>
-        <th style="text-align:left; padding:8px 12px; color:#666; font-weight:500;">Role</th>
-        <th style="text-align:left; padding:8px 12px; color:#666; font-weight:500;">Joined</th>
+      <tr style="background:#fafafa; border-bottom:0.5px solid #e8e8e8;">
+        <th style="padding:10px 16px; text-align:left; font-size:12px;
+                   font-weight:500; color:#888; text-transform:uppercase;
+                   letter-spacing:.05em;">User</th>
+        <th style="padding:10px 16px; text-align:left; font-size:12px;
+                   font-weight:500; color:#888; text-transform:uppercase;
+                   letter-spacing:.05em;">Email</th>
+        <th style="padding:10px 16px; text-align:left; font-size:12px;
+                   font-weight:500; color:#888; text-transform:uppercase;
+                   letter-spacing:.05em;">Role</th>
+        <th style="padding:10px 16px; text-align:left; font-size:12px;
+                   font-weight:500; color:#888; text-transform:uppercase;
+                   letter-spacing:.05em;">Joined</th>
+        <th style="padding:10px 16px; text-align:left; font-size:12px;
+                   font-weight:500; color:#888; text-transform:uppercase;
+                   letter-spacing:.05em;">Actions</th>
       </tr>
     </thead>
     <tbody>
       {% for user in users %}
       <tr style="border-bottom:0.5px solid #f0f0f0;">
-        <td style="padding:10px 12px;">{{ user.username }}</td>
-        <td style="padding:10px 12px; color:#666;">{{ user.email }}</td>
-        <td style="padding:10px 12px;">
-          <span style="font-size:12px; padding:2px 8px; border-radius:20px;
-                       background:{{ '#fff8f8' if user.role == 'admin' else '#f5f5f5' }};
-                       color:{{ '#a32d2d' if user.role == 'admin' else '#555' }};
-                       border:0.5px solid {{ '#f09595' if user.role == 'admin' else '#ddd' }};">
-            {{ user.role }}
-          </span>
+
+        {# Avatar + username #}
+        <td style="padding:12px 16px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            {{ user_avatar(user, size=32) }}
+            <span style="font-weight:500;">{{ user.username }}</span>
+            {% if user.id == current_user.id %}
+            <span style="font-size:11px; color:#888;">(you)</span>
+            {% endif %}
+          </div>
         </td>
-        <td style="padding:10px 12px; color:#666;">
+
+        {# Email #}
+        <td style="padding:12px 16px; color:#666;">
+          {{ user.email }}
+        </td>
+
+        {# Role badge #}
+        <td style="padding:12px 16px;">
+          {{ role_badge(user.role) }}
+        </td>
+
+        {# Join date #}
+        <td style="padding:12px 16px; color:#888; font-size:13px;">
           {{ user.created_at.strftime('%d %b %Y') }}
         </td>
+
+        {# Actions — disabled for yourself #}
+        <td style="padding:12px 16px;">
+          {% if user.id != current_user.id %}
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+
+            {# Role change form — inline POST #}
+            <form method="POST" action="{{ url_for('dashboard.change_role', user_id=user.id) }}"
+              style="display:flex; gap:4px; align-items:center;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="role" style="height:28px; padding:0 6px; font-size:12px;
+                             border:0.5px solid #d0d0d0; border-radius:6px;
+                             background:#fff;">
+                <option value="viewer" {{ 'selected' if user.role=='viewer' }}>viewer</option>
+                <option value="editor" {{ 'selected' if user.role=='editor' }}>editor</option>
+                <option value="admin" {{ 'selected' if user.role=='admin' }}>admin</option>
+              </select>
+              <button type="submit" style="height:28px; padding:0 10px; font-size:12px;
+                             border:0.5px solid #d0d0d0; border-radius:6px;
+                             background:#fafafa; cursor:pointer;">
+                Save
+              </button>
+            </form>
+
+            {# Delete form #}
+            <form method="POST" action="{{ url_for('dashboard.delete_user', user_id=user.id) }}"
+              onsubmit="return confirm('Delete {{ user.username }}? This cannot be undone.');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" style="height:28px; padding:0 10px; font-size:12px;
+                             border:0.5px solid #f09595; border-radius:6px;
+                             background:#fff8f8; color:#a32d2d; cursor:pointer;">
+                Delete
+              </button>
+            </form>
+
+          </div>
+          {% else %}
+          <span style="font-size:12px; color:#bbb;">—</span>
+          {% endif %}
+        </td>
+
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  {% else %}
+  <div style="padding:48px; text-align:center; color:#888;">
+    <p style="font-size:15px; margin:0 0 8px;">No users found.</p>
+    {% if search %}
+    <a href="{{ url_for('dashboard.admin_panel') }}" style="font-size:14px;">
+      Clear search
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
+
 {% endblock %}

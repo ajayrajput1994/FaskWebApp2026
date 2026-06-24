@@ -56,6 +56,18 @@ class User(db.Model, UserMixin):
         """
         return self.role in roles
 
+    @classmethod
+    def count_by_role(cls, role):
+        """Returns total users with the given role. Used by dashboard stats."""
+        return cls.query.filter_by(role=role).count()
+
+    @classmethod
+    def new_this_week(cls):
+        """Returns count of users registered in the last 7 days."""
+        from datetime import datetime, timedelta
+        cutoff = datetime.utcnow() - timedelta(days=7)
+        return cls.query.filter(cls.created_at >= cutoff).count()
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

@@ -1,10 +1,10 @@
-{# app/templates/errors/404.html #}
+{# app/templates/errors/500.html #}
 {% extends 'base.html' %}
-{% block title %}404 Not found{% endblock %}
+{% block title %}500 Server error{% endblock %}
 {% block content %}
 <div class="error-page">
-  <h2>404 — Page not found</h2>
-  <p>The page you are looking for does not exist.</p>
+  <h2>500 — Something went wrong</h2>
+  <p>An unexpected error occurred. Please try again shortly.</p>
   <a href="{{ url_for('dashboard.index') }}" class="btn btn--primary">
     Back to dashboard
   </a>
