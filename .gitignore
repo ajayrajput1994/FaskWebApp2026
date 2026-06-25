@@ -7,3 +7,5 @@ __pycache__/
 *.db
 instance/
 logs/
+logs/*.log
+logs/*.log.*

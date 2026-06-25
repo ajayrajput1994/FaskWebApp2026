@@ -1,0 +1,15 @@
+{# app/templates/errors/429.html #}
+{% extends 'base.html' %}
+{% block title %}Too many requests{% endblock %}
+{% block content %}
+<div class="error-page">
+  <h2>429 — Too many requests</h2>
+  <p>
+    You have made too many requests too quickly.
+    Please wait a moment and try again.
+  </p>
+  <a href="{{ url_for('auth.login') }}" class="btn btn--primary">
+    Back to login
+  </a>
+</div>
+{% endblock %}

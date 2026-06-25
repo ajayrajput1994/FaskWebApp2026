@@ -1,15 +1,19 @@
 # app/auth/routes.py
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from . import auth_bp         # import the blueprint we defined in __init__.py
-from app.extensions import db
-from app.model import User 
+from . import auth_bp
+from app.extensions import db, limiter
+from app.model import User
 from .utils import role_required, send_welcome_email
 from .forms import RegistrationForm, LoginForm, ForgotPasswordForm, ResetPasswordForm
 from .utils import role_required, send_welcome_email, \
                    generate_reset_token, verify_reset_token, send_reset_email
+import logging
+security_log = logging.getLogger('security')
+
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
+@limiter.limit('5 per hour')     # max 5 registrations per IP per hour
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.index'))
@@ -28,62 +32,62 @@ def register():
             return render_template('auth/register.html', form=form)
         
     if form.validate_on_submit():
-        # validate_on_submit() returns True only when:
-        #   1. The request method is POST
-        #   2. All validators passed (including custom ones)
-        #   3. The CSRF token is valid
-        # If any of those fail, it returns False and form.errors
-        # is populated — we just fall through to render_template().
-
         user = User(
             username=form.username.data,
-            email=form.email.data.lower(),  # always lowercase emails
+            email=form.email.data.lower(),  
         )
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        security_log.warning(
+            'REGISTER_SUCCESS user_id=%s email=%s ip=%s',
+            user.id, user.email, request.remote_addr,
+        )
         send_welcome_email(user)  
         flash('Account created! Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
-    # GET request, or POST that failed validation:
-    # render the template — form.errors is already populated
     return render_template('auth/register.html', form=form)
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
+@limiter.limit('10 per minute')  # max 10 login attempts per IP per minute
+@limiter.limit('50 per hour')    # and max 50 per hour (stacked)
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.index'))
-    form = LoginForm()
-    
+    form = LoginForm()    
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
-          
         if not email or not password:
             flash('All fields are required.', 'danger')
             return render_template('auth/login.html', form=form)
         
     if form.validate_on_submit():
-        user = User.query.filter_by(
-            email=form.email.data.lower()
-        ).first() 
-
+        user = User.query.filter_by(email=form.email.data.lower()).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember.data)
+            security_log.warning(
+                'LOGIN_SUCCESS user_id=%s email=%s ip=%s',
+                user.id, user.email, request.remote_addr,
+            )
             next_page = request.args.get('next')
+            flash(f'Welcome back, {user.username}!', 'success')
             return redirect(next_page or url_for('dashboard.index'))
 
-        # Wrong credentials: use flash, NOT form field errors.
-        # Never say "email not found" — that reveals which emails exist.
+        security_log.warning(
+            'LOGIN_FAILED email=%s ip=%s',
+            form.email.data.strip().lower(),
+            request.remote_addr,
+        )
         flash('Invalid email or password.', 'danger')
-    # (Full login logic with forms added in Phase 4 of the roadmap)
     return render_template('auth/login.html', form=form)
 
 
 @auth_bp.route('/logout')
 @login_required
+@limiter.exempt   # never block logout
 def logout():
     logout_user()
     flash('You have been logged out.', 'info')
@@ -91,6 +95,7 @@ def logout():
 
 
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+@limiter.limit('3 per hour')   # max 3 reset requests per IP per hour
 def forgot_password():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.index'))

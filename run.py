@@ -14,7 +14,7 @@ def home():
     # db.session.add(user)
     # db.session.commit()
     # print('editor user created.')
-    return render_template("base.html") 
+    return render_template("base.html")
 
 
 if __name__ == '__main__':

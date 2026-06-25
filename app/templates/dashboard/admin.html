@@ -118,7 +118,7 @@
 
             {# Delete form #}
             <form method="POST" action="{{ url_for('dashboard.delete_user', user_id=user.id) }}"
-              onsubmit="return confirm('Delete {{ user.username }}? This cannot be undone.');">
+              data-confirm="Delete {{ user.username }}? This cannot be undone.">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" style="height:28px; padding:0 10px; font-size:12px;
                              border:0.5px solid #f09595; border-radius:6px;
@@ -149,5 +149,11 @@
   </div>
   {% endif %}
 </div>
-
+<script nonce="{{ csp_nonce() }}">
+  document.querySelectorAll('[data-confirm]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      if (!confirm(form.dataset.confirm)) e.preventDefault();
+    });
+  });
+</script>
 {% endblock %}

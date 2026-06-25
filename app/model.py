@@ -22,7 +22,7 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow,
                            onupdate=datetime.utcnow)
     profile = db.relationship('Profile', back_populates='user',
-                              uselist=False,      # returns object, not list
+                              uselist=False,
                               cascade='all, delete-orphan')
     posts = db.relationship('Post', back_populates='author',
                             lazy='dynamic',

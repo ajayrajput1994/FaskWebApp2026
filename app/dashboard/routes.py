@@ -5,6 +5,9 @@ from app.model import User
 from . import dashboard_bp
 from app.auth import role_required
 from app.extensions import db
+import logging
+from flask import current_app
+security_log = logging.getLogger('security')
 
 
 @dashboard_bp.route('/')
@@ -69,8 +72,14 @@ def change_role(user_id):
     if new_role not in ('admin', 'editor', 'viewer'):
         flash('Invalid role.', 'danger')
         return redirect(url_for('dashboard.admin_panel'))
+    old_role = user.role
     user.role = new_role
     db.session.commit()
+    security_log.warning(
+        'ROLE_CHANGE admin_id=%s target_user_id=%s %s→%s ip=%s',
+        current_user.id, user.id, old_role, new_role,
+        request.remote_addr,
+    )
     flash(f'{user.username} is now {new_role}.', 'success')
     return redirect(url_for('dashboard.admin_panel'))
 
@@ -84,8 +93,13 @@ def delete_user(user_id):
     if user.id == current_user.id:
         flash('You cannot delete your own account here.', 'warning')
         return redirect(url_for('dashboard.admin_panel'))
+    email = user.email
     db.session.delete(user)
     db.session.commit()
+    security_log.warning(
+        'USER_DELETED admin_id=%s deleted_email=%s ip=%s',
+        current_user.id, email, request.remote_addr,
+    )
     flash(f'User {user.username} has been deleted.', 'success')
     return redirect(url_for('dashboard.admin_panel'))
 
