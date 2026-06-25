@@ -230,3 +230,23 @@ pip install flask-wtf email-validator
 {% set page_title = 'Admin Panel' %}
 {% set user_count = users|length %}
 ==========================jinja2 end===========================
+
+=====================pytest=============================
+# Run all tests with verbose output
+pytest -v
+
+# Run with coverage report
+pytest --cov=app --cov-report=term-missing -v
+
+# Run one specific file
+pytest tests/test_auth.py -v
+
+# Run one specific class
+pytest tests/test_dashboard.py::TestAdminActions -v
+
+# Run one specific test
+pytest tests/test_auth.py::TestLogin::test_login_success -v
+
+# Stop after first failure (useful while fixing bugs)
+pytest -x -v
+====================pytest end====================
