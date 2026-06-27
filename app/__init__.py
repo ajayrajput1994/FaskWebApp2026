@@ -24,7 +24,8 @@ def create_app(config_name='development'):
     migrate.init_app(app, db)
 
     # ── Rate limiter — bind with Redis URI from config ────────────
-    limiter.storage_uri = app.config['REDIS_URL']      # ← ADD
+    redis_url = app.config.get('REDIS_URL', 'redis://localhost:6379/0')
+    limiter.storage_uri = redis_url
     limiter.init_app(app)
 
     configure_logging(app)

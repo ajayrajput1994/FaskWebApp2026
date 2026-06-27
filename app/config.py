@@ -20,8 +20,8 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # -----------render---------
-    # REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
-      
+    REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    
     # Always False — the event system wastes memory and you don't need it
     WTF_CSRF_ENABLED = True   # default True, explicit is clearer
     SESSION_COOKIE_HTTPONLY = True
