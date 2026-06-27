@@ -43,7 +43,14 @@ def register():
             'REGISTER_SUCCESS user_id=%s email=%s ip=%s',
             user.id, user.email, request.remote_addr,
         )
-        send_welcome_email(user)  
+        try:
+            send_welcome_email(user)
+        except Exception as e:
+            # Log the failure but do not crash the request
+            from flask import current_app
+            current_app.logger.error(
+                'Welcome email failed for %s: %s', user.email, str(e)
+            ) 
         flash('Account created! Please log in.', 'success')
         return redirect(url_for('auth.login'))
 
@@ -108,8 +115,14 @@ def forgot_password():
         ).first()
 
         if user:
-            token = generate_reset_token(user.email)
-            send_reset_email(user, token)
+            try:
+                token = generate_reset_token(user.email)
+                send_reset_email(user, token)
+            except Exception as e:
+                from flask import current_app
+                current_app.logger.error(
+                    'Reset email failed for %s: %s', user.email, str(e)
+                )
 
         # ALWAYS show the same message whether the email exists or not.
         # Showing "email not found" tells attackers which emails are registered.
