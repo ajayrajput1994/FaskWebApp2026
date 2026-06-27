@@ -18,7 +18,10 @@ class Config:
     # SECRET_KEY signs cookies and session data. Must be long + random in prod.
     # --- SQLAlchemy ---
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    REDIS_URL         = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+
+    # -----------render---------
+    # REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+      
     # Always False — the event system wastes memory and you don't need it
     WTF_CSRF_ENABLED = True   # default True, explicit is clearer
     SESSION_COOKIE_HTTPONLY = True
@@ -35,7 +38,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
     # In testing, suppress all outgoing emails so nothing is sent for real
-    MAIL_SUPPRESS_SEND  = False   # overridden to True in TestingConfig
+    MAIL_SUPPRESS_SEND = False   # overridden to True in TestingConfig
 
     # --- Session security ---
     SESSION_COOKIE_HTTPONLY = True   # JS can't read the session cookie
@@ -53,8 +56,13 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False   # NEVER True in production
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SESSION_COOKIE_SECURE = True   # only send cookie over HTTPS
+    # SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    # Render gives postgres:// but SQLAlchemy needs postgresql://
+    _db_url = os.environ.get('DATABASE_URL', '')
+    SQLALCHEMY_DATABASE_URI = _db_url.replace(
+        'postgres://', 'postgresql://', 1
+    ) if _db_url else None
 
 
 class TestingConfig(Config):
