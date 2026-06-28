@@ -1,11 +1,9 @@
 # .gitignore
-# .gitignore
 .env
 venv/
+.venv/
 __pycache__/
 *.pyc
 *.db
 instance/
-logs/
 logs/*.log
-logs/*.log.*
