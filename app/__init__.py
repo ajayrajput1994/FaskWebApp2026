@@ -8,6 +8,7 @@ from app.models.profile import Profile
 from app.models.post import Post  
 from app.models.comment import Comment  
 from app.models.tag import Tag, post_tags
+from app.models.Invoice import Invoice
 from .logging_config import configure_logging  
 import time
 
@@ -35,9 +36,11 @@ def create_app(config_name='development'):
     csp = {
         'default-src': "'self'",
         # Scripts: only from your own domain
-        'script-src': ["'self'"],
+        # 'script-src': ["'self'"],
+        'script-src':  ["'self'", "'unsafe-inline'"],
         # Styles: your domain + Google Fonts
-        'style-src':  ["'self'", 'fonts.googleapis.com'],
+        # 'style-src':  ["'self'", 'fonts.googleapis.com'],
+        'style-src':   ["'self'", "'unsafe-inline'"],
         # Fonts: your domain + Google Fonts CDN
         'font-src':   ["'self'", 'fonts.gstatic.com'],
         # Images: your domain + inline data: URIs (for avatars etc.)
@@ -79,7 +82,7 @@ def create_app(config_name='development'):
 
         # ── Content Security Policy ───────────────────────────────
         content_security_policy=csp,
-        content_security_policy_nonce_in=['script-src'],
+        # content_security_policy_nonce_in=['script-src'],
 
         # ── Referrer leakage ──────────────────────────────────────
         referrer_policy='strict-origin-when-cross-origin',
@@ -99,10 +102,14 @@ def create_app(config_name='development'):
     from .auth import auth_bp
     from .dashboard import dashboard_bp
     from .api import api_bp
+    from .organisations.routes import org_bp
+    from .billing.routes import billing_bp
 
     app.register_blueprint(auth_bp,      url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(api_bp,       url_prefix='/api/v1')
+    app.register_blueprint(org_bp)
+    app.register_blueprint(billing_bp)
 
     # ── Cache-Control on all dashboard routes ─────────────────────
     @app.after_request

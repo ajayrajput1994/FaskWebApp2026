@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Pricing{% endblock %}
+{% block content %}
+<div style="max-width:760px; margin:48px auto; padding:0 20px; text-align:center;">
+  <h2 style="font-size:28px; margin-bottom:8px;">Simple, honest pricing</h2>
+  <p style="color:#666; margin-bottom:40px;">
+    Start free. Upgrade when you need more.
+  </p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+              gap:16px; text-align:left;">
+
+    <!-- Free tier -->
+    <div style="border:0.5px solid #e0e0e0; border-radius:12px; padding:24px;">
+      <p style="font-size:13px; color:#888; margin:0 0 8px; text-transform:uppercase;
+                letter-spacing:.05em;">Free</p>
+      <p style="font-size:32px; font-weight:500; margin:0 0 4px;">$0</p>
+      <p style="font-size:13px; color:#888; margin:0 0 20px;">forever</p>
+      <ul style="font-size:14px; color:#555; padding:0 0 0 16px; margin:0 0 24px;">
+        <li style="margin-bottom:6px;">1 organisation</li>
+        <li style="margin-bottom:6px;">Up to 3 team members</li>
+        <li style="margin-bottom:6px;">Core features</li>
+      </ul>
+      <a href="{{ url_for('auth.register') }}" class="btn btn--full" style="text-align:center; display:block;">Get
+        started</a>
+    </div>
+
+    <!-- Starter tier -->
+    <div style="border:2px solid #4a7cf7; border-radius:12px; padding:24px;
+                position:relative;">
+      <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%);
+                   background:#4a7cf7; color:#fff; font-size:11px; padding:3px 12px;
+                   border-radius:20px; font-weight:500;">Most popular</span>
+      <p style="font-size:13px; color:#888; margin:0 0 8px; text-transform:uppercase;
+                letter-spacing:.05em;">Starter</p>
+      <p style="font-size:32px; font-weight:500; margin:0 0 4px;">$12</p>
+      <p style="font-size:13px; color:#888; margin:0 0 20px;">per month</p>
+      <ul style="font-size:14px; color:#555; padding:0 0 0 16px; margin:0 0 24px;">
+        <li style="margin-bottom:6px;">Unlimited organisations</li>
+        <li style="margin-bottom:6px;">Up to 10 team members</li>
+        <li style="margin-bottom:6px;">All core features</li>
+        <li style="margin-bottom:6px;">Email reports</li>
+        <li style="margin-bottom:6px;">Priority support</li>
+      </ul>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('billing.checkout', plan='starter') }}" class="btn btn--primary btn--full"
+        style="text-align:center; display:block;">
+        Upgrade to Starter
+      </a>
+      {% else %}
+      <a href="{{ url_for('auth.register') }}" class="btn btn--primary btn--full"
+        style="text-align:center; display:block;">
+        Start free trial
+      </a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

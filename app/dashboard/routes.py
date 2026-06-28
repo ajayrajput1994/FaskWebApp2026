@@ -1,5 +1,5 @@
 # app/dashboard/routes.py
-from flask import render_template, redirect, url_for, flash, request, abort
+from flask import render_template, redirect, url_for, flash, request, abort, g
 from flask_login import login_required, current_user
 from app.model import User
 from . import dashboard_bp
@@ -7,6 +7,10 @@ from app.auth import role_required
 from app.extensions import db
 import logging
 from flask import current_app
+from app.billing.utils import requires_paid_plan
+from app.organisations.routes import require_org
+from app.models.Invoice import Invoice
+
 security_log = logging.getLogger('security')
 
 
@@ -111,3 +115,22 @@ def users():
         abort(403)               
     all_users = User.query.all()
     return render_template('dashboard/users.html', users=all_users)
+
+
+@dashboard_bp.route('/reports')
+@login_required
+@require_org
+@requires_paid_plan 
+def reports():
+    return render_template('dashboard/reports.html')
+
+
+@dashboard_bp.route('/invoices')
+@login_required
+@require_org
+def invoices():
+    # g.org is set by @require_org
+    items = Invoice.query.filter_by(
+        organisation_id=g.org.id
+    ).order_by(Invoice.created_at.desc()).all()
+    return render_template('dashboard/invoices.html', invoices=items)

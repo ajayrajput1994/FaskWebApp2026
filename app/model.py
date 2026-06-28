@@ -2,6 +2,7 @@
 from app.extensions import db, login_manager
 from flask_login import UserMixin
 from datetime import datetime
+from .models.organisation import Membership
 import bcrypt
 
 
@@ -29,6 +30,8 @@ class User(db.Model, UserMixin):
                             cascade='all, delete-orphan')
     comments = db.relationship('Comment', back_populates='author',
                             lazy='dynamic',
+                            cascade='all, delete-orphan')
+    memberships = db.relationship('Membership', back_populates='user',
                             cascade='all, delete-orphan')
 
     def set_password(self, raw):
@@ -67,6 +70,16 @@ class User(db.Model, UserMixin):
         from datetime import datetime, timedelta
         cutoff = datetime.utcnow() - timedelta(days=7)
         return cls.query.filter(cls.created_at >= cutoff).count()
+    
+    def get_organisations(self):
+        return [m.organisation for m in self.memberships]
+
+    def is_owner_of(self, org):
+        m = Membership.query.filter_by(
+            user_id=self.id,
+            organisation_id=org.id
+        ).first()
+        return m and m.role == 'owner'
 
 @login_manager.user_loader
 def load_user(user_id):
